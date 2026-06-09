@@ -1,0 +1,2 @@
+# SMART_HOME_CONSOLE_REMOTE
+Example 3
