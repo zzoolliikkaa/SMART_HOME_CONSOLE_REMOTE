@@ -1,4 +1,5 @@
 ﻿using Smart_Home_Console_Remote;
+using Smart_Home_Console_Remote.Models.Interfaces;
 
 public class SmartPlug : SmartDevice, IMeasurableLoad
 {
@@ -24,13 +25,5 @@ public class SmartPlug : SmartDevice, IMeasurableLoad
         }
         CurrentWatts = watts;
         TotalWh += CurrentWatts * hours;
-    }
-    public double GetTotalEnergy()
-    {
-        return TotalWh;
-    }
-    public double GetCurrentLoad()
-    {
-        return CurrentWatts;
     }
 }

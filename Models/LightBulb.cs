@@ -1,7 +1,7 @@
 ﻿using Smart_Home_Console_Remote;
 using Smart_Home_Console_Remote.Models;
 using Smart_Home_Console_Remote.Models.Interfaces;
-public class LightBulbs: SmartDevice, IDimmable
+public class LightBulb: SmartDevice, IDimmable
 {
     public int Brightness { get; private set; } = 0;
     public void SetBrightness(int value)

@@ -1,5 +1,7 @@
-﻿public interface ITemperatureControl
+﻿namespace Smart_Home_Console_Remote.Models.Interfaces;
+
+interface ITemperatureControl
 {
     double TargetCelsius { get; }
-    public void SetTarget(double celsius);
+    void SetTarget(double celsius);
 }

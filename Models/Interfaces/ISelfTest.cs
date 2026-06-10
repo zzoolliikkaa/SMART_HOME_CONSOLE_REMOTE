@@ -2,5 +2,5 @@
 
 public interface ISelfTest
 {
-    public bool SelfTest();
+    bool SelfTest();
 }
