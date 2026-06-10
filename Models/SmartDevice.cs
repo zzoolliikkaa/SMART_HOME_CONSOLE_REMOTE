@@ -6,16 +6,16 @@ public abstract class SmartDevice : IPowerSwitch, ISelfTest
 {
     public int Id { get; set; } = 0;
     public string Name { get; set; } = string.Empty;
-    public bool powerStatus { get; set; } = false;
+    public bool IsPoweredOn { get; set; } = false;
     public abstract int GetStatus();
     public abstract bool SelfTest();
     public void PowerOn()
     {
-        powerStatus = true;
+        IsPoweredOn = true;
     }
     public void PowerOff()
     {
-        powerStatus = false;
+        IsPoweredOn = false;
     }
     public string ReadDeviceInfo()
     {

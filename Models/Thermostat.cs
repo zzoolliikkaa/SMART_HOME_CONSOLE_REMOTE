@@ -16,7 +16,7 @@ public class Thermostat : SmartDevice, ITemperatureControl
         //{
         //    return 0; // Heating is off;
         //}
-        return base.powerStatus ? 1 : 0;
+        return base.IsPoweredOn ? 1 : 0;
     }
     public override bool SelfTest()
     {

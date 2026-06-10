@@ -7,7 +7,7 @@ public class SmartPlug : SmartDevice, IMeasurableLoad
     public double TotalWh { get; private set; } = 0;
     public override int GetStatus()
     {
-        return base.powerStatus ? 1 : 0;
+        return base.IsPoweredOn ? 1 : 0;
     }
     public override bool SelfTest()
     {

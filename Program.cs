@@ -6,7 +6,8 @@ Menu MainMenu = new Menu();
 Menu DeviceMenu = new Menu();
 List<SmartDevice> DeviceList = new List<SmartDevice>();
 
-int choice = 0;
+int mainChoice = 0;
+int deviceChoice = 0;
 
 MainMenu.AddCaption("SMART HOME CONSOLE REMOTE");
 MainMenu.AddOption("List devices");
@@ -16,16 +17,17 @@ MainMenu.AddOption("Device actions");
 MainMenu.AddOption("Self-test all");
 MainMenu.AddOption("Exit");
 
+DeviceMenu.AddCaption("ADD DEVICE");
 DeviceMenu.AddOption("Light bulb");
 DeviceMenu.AddOption("Thermostat");
 DeviceMenu.AddOption("Smart plug");
 DeviceMenu.AddOption("Back to main menu");
 
-while (MainMenuOptions.Exit != (MainMenuOptions)choice)
+while (MainMenuOptions.Exit != (MainMenuOptions)mainChoice)
 {
     MainMenu.DisplayMenu();
-    choice = MainMenu.ReadChoice();
-    MainMenuOptions MainMenuSelected = (MainMenuOptions)choice;
+    mainChoice = MainMenu.ReadChoice();
+    MainMenuOptions MainMenuSelected = (MainMenuOptions)mainChoice;
     switch (MainMenuSelected)
     {
         case MainMenuOptions.ListDevices:
@@ -85,13 +87,12 @@ void ListDevices()
 
 void AddDevice()
 {
-    while (DeviceMenuOptions.BackToMainMenu != (DeviceMenuOptions)choice)
+    while (DeviceMenuOptions.BackToMainMenu != (DeviceMenuOptions)deviceChoice)
     {
-        DeviceMenu.AddCaption("ADD DEVICE");
         DeviceMenu.DisplayMenu();
-        choice = DeviceMenu.ReadChoice();
-        DeviceMenuOptions DeviceMenSelected = (DeviceMenuOptions)choice;
-        switch (DeviceMenSelected)
+        deviceChoice = DeviceMenu.ReadChoice();
+        DeviceMenuOptions DeviceMenuSelected = (DeviceMenuOptions)deviceChoice;
+        switch (DeviceMenuSelected)
         {
             case DeviceMenuOptions.LightBulb:
                 DeviceList.Add(new LightBulb());
@@ -114,24 +115,27 @@ void AddDevice()
     }
 
 }
+
 void AddDeviceInfo()
 {
     DeviceList.Last().Id = DeviceList.Count;
     DeviceList.Last().Name = DeviceList.Last().ReadDeviceInfo();
 }
+
 SmartDevice ReadDeviceID()
 {
     int deviceId = int.TryParse(Console.ReadLine(), out int result) ? result : 0;
     var device = DeviceList.FirstOrDefault(d => d.Id == deviceId);
     return device;
 }
+
 void TogglePower()
 {
     Console.Write("Enter device ID to toggle power:");
     SmartDevice device = ReadDeviceID();
     if (device != null)
     {
-        if (device.powerStatus)
+        if (device.IsPoweredOn)
         {
             device.PowerOff();
             Console.WriteLine($"Device {device.Name} powered off.");
@@ -148,6 +152,7 @@ void TogglePower()
     }
     Console.ReadLine();
 }
+
 void DeviceActions()
 {
     Console.Write("Enter device ID to Device actions:");
@@ -162,48 +167,15 @@ void DeviceActions()
         {
             if (device is IDimmable dimmable)
             {
-
-                Console.Write("Enter the value of the brightness (0–100):");
-                int brightness = int.TryParse(Console.ReadLine(), out int br) ? br : 0;
-                if (brightness < 0 || brightness > 100)
-                {
-                    Console.WriteLine("Brightness must be between 0 and 100.");
-                }
-                else
-                {
-                    dimmable.SetBrightness(brightness);
-                    Console.WriteLine($"Device {device.Name} brightness set to {brightness}.");
-                }
-
-
+                HandleDimmable(dimmable, device);
             }
             else if (device is ITemperatureControl temperatureControl)
             {
-                Console.Write("Enter the value of the target temperature (10–30):");
-                double temp = double.TryParse(Console.ReadLine(), out double t) ? t : 0;
-                if (temp < 10 || temp > 30)
-                {
-                    Console.WriteLine("Temperature must be between 10 and 30.");
-                }
-                else
-                {
-                    temperatureControl.SetTarget(temp);
-                    Console.WriteLine($"Device {device.Name} target temperature set to {temp}.");
-                }
-
+                HandleTemperature(temperatureControl, device);
             }
             else if (device is IMeasurableLoad measurableLoad)
             {
-                measurableLoad.UpdateEnergy(1000, 2);
-                Console.WriteLine($"Total power consumtion: {measurableLoad.TotalWh} Wh");
-                Console.WriteLine($"Current power consumtion: {measurableLoad.CurrentWatts} W");
-                Console.Write("Do you want to RESET the Total energy (y/n) ? : ");
-                bool totalReset = Console.ReadLine()?.Trim().ToLower() == "y";
-                if (totalReset)
-                {
-                    measurableLoad.ResetEnergy();
-                }
-
+                HandleMeasurableLoad(measurableLoad);
             }
         }
     }
@@ -213,6 +185,52 @@ void DeviceActions()
     }
     Console.ReadLine();
 }
+
+void HandleDimmable(IDimmable dimmable, SmartDevice device)
+{
+    Console.Write("Enter the value of the brightness (0–100):");
+    int brightness = int.TryParse(Console.ReadLine(), out int br) ? br : 0;
+    if (brightness < 0 || brightness > 100)
+    {
+        Console.WriteLine("Brightness must be between 0 and 100.");
+    }
+    else
+    {
+        dimmable.SetBrightness(brightness);
+        Console.WriteLine($"Device {device.Name} brightness set to {brightness}.");
+    }
+}
+
+void HandleTemperature(ITemperatureControl temperatureControl, SmartDevice device)
+{
+    Console.Write("Enter the value of the target temperature (10–30):");
+    double temp = double.TryParse(Console.ReadLine(), out double t) ? t : 0;
+    if (temp < 10 || temp > 30)
+    {
+        Console.WriteLine("Temperature must be between 10 and 30.");
+    }
+    else
+    {
+        temperatureControl.SetTarget(temp);
+        Console.WriteLine($"Device {device.Name} target temperature set to {temp}.");
+    }
+
+}
+
+void HandleMeasurableLoad(IMeasurableLoad measurableLoad)
+{
+    measurableLoad.UpdateEnergy(1000, 2);
+    Console.WriteLine($"Total power consumption: {measurableLoad.TotalWh} Wh");
+    Console.WriteLine($"Current power consumption: {measurableLoad.CurrentWatts} W");
+    Console.Write("Do you want to RESET the Total energy (y/n) ? : ");
+    bool totalReset = Console.ReadLine()?.Trim().ToLower() == "y";
+    if (totalReset)
+    {
+        measurableLoad.ResetEnergy();
+    }
+    Console.WriteLine($"Total power consumption: {measurableLoad.TotalWh} Wh");
+}
+
 void SelfTestAll()
 {
     if (DeviceList.Count == 0)

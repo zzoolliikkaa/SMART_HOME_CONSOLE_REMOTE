@@ -15,7 +15,7 @@ public class LightBulb: SmartDevice, IDimmable
 
     public override int GetStatus()
     {
-        return base.powerStatus ? 1 : 0;
+        return base.IsPoweredOn ? 1 : 0;
     }
     public override bool SelfTest()
     {
